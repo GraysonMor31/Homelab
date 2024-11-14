@@ -8,24 +8,37 @@ services:
       MYSQL_ROOT_PASSWORD: password
     volumes:
       - ./hive_metastore.sql:/docker-entrypoint-initdb.d/schema.sql
+
   namenode:
     image: bayuadiwibowo/hadoop-namenode:latest
     hostname: namenode
     volumes:
       - ./Makefile:/opt/hadoop/Makefile
     ports:
-      - 9870:9870
+      - 8081:9870
     env_file:
       - ./env.cfg
     environment:
       ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
       HIVE_HOME: "/opt/hive"
     command: bash -c "make start-zeppelin && make start-namenode && make install-hive"
+    entrypoint: >
+      sh -c "
+      wget https://downloads.apache.org/zeppelin/zeppelin-0.9.0/zeppelin-0.9.0-bin-all.tgz &&
+      tar -xzf zeppelin-0.11.0-bin-all.tgz -C /opt &&
+      mv /opt/zeppelin-01.0-bin-all /opt/zeppelin &&
+      /opt/zeppelin/bin/zeppelin-daemon.sh start &&
+      make start-zeppelin &&
+      make start-namenode &&
+      make install-hive
+      "
+
   datanode:
     image: apache/hadoop:3
     command: [ "hdfs", "datanode" ]
     env_file:
       - ./env.cfg
+
   resourcemanager:
     image: apache/hadoop:3
     hostname: resourcemanager
@@ -34,11 +47,13 @@ services:
       - 8088:8088
     env_file:
       - ./env.cfg
+
   nodemanager:
     image: apache/hadoop:3
     command: [ "yarn", "nodemanager" ]
     env_file:
       - ./env.cfg
+
   firefox:
     image: jlesage/firefox
     hostname: firefox
