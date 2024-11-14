@@ -1,3 +1,0 @@
-Hive cheatsheet:
-- Start beeline: /opt/hive/bin/beeline
-- [Beeline] Connect to hive jdbc: !connect jdbc:hive2://namenode:10000
