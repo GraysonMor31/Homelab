@@ -1,0 +1,4 @@
+# Ignore log files
+BigDataCluster/Spark/spark-master-logs/
+BigDataCluster/Spark/spark-worker-1-logs/
+BigDataCluster/Spark/spark-worker-2-logs/

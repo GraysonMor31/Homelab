@@ -1,0 +1,57 @@
+services:
+  spark-master:
+    container_name: spark-master
+    build:
+      context: ./spark-master
+      dockerfile: Dockerfile
+    hostname: spark-master
+    ports:
+      - 8080:8080
+      - 7077:7077
+    volumes:
+      - ./hadoop-conf:/opt/hadoop-3.3.0/etc/hadoop
+      - ./spark-master-logs:/spark/logs
+    environment:
+      SPARK_MODE: "master"
+      HDFS_URI: "hdfs://namenode:9000"
+      SPARK_HOME: "/spark"
+    networks:
+      - bigdata-network
+
+  spark-worker-1:
+    container_name: spark-worker-1
+    build:
+      context: ./spark-worker
+      dockerfile: Dockerfile
+    hostname: spark-worker-1
+    volumes:
+      - ./hadoop-conf:/opt/hadoop-3.3.0/etc/hadoop
+      - ./spark-worker-1-logs:/spark/logs
+    environment:
+      SPARK_MODE: "worker"
+      SPARK_MASTER_URL: "spark://spark-master:7077"
+      HDFS_URI: "hdfs://namenode:9000"
+      SPARK_HOME: "/spark"
+    networks:
+      - bigdata-network
+
+  spark-worker-2:
+    container_name: spark-worker-2
+    build:
+      context: ./spark-worker
+      dockerfile: Dockerfile
+    hostname: spark-worker-2
+    volumes:
+      - ./hadoop-conf:/opt/hadoop-3.3.0/etc/hadoop
+      - ./spark-worker-2-logs:/spark/logs
+    environment:
+      SPARK_MODE: "worker"
+      SPARK_MASTER_URL: "spark://spark-master:7077"
+      HDFS_URI: "hdfs://namenode:9000"
+      SPARK_HOME: "/spark"
+    networks:
+      - bigdata-network
+
+networks:
+  bigdata-network:
+    driver: bridge
