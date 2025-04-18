@@ -2,3 +2,10 @@
 BigDataCluster/Spark/spark-master-logs/
 BigDataCluster/Spark/spark-worker-1-logs/
 BigDataCluster/Spark/spark-worker-2-logs/
+
+# Ignore secrets and env stuff
+*.env
+.env
+
+# Ignore VS Code Crap
+.vscode
