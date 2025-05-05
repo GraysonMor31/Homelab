@@ -30,8 +30,6 @@ The homelab includes a range of systems, services, and tools to simulate real-wo
 - **Nextcloud**: Self-hosted cloud like file sync and sharing platform.
 - **Plex**: Self-hosted media server and streaming service.
 - **Monetr**: Self-hosted household budgeting application similar to something like RocketMoney
-- **Ollama/OpenWebUI**: Self-hosted generative AI service using Meta's Llama models and an UI similar to ChatGPT with WebSearch.
-- **Automatic1111**: Self-hosted generative AI service for creating images.
 
 ### 5. Development & Collaboration
 - **Gitea**: Self-hosted Git repository management.
@@ -41,12 +39,17 @@ The homelab includes a range of systems, services, and tools to simulate real-wo
 - **MySQL**: RDBMS for homelab data.
 - **PostgreSQL**: DBMS for coding projects
 
-### 6. Other Services
+### 6. AI and Local LLMs
+- **Ollama/OpenWebUI**: Self-hosted generative AI service using Meta's Llama models (3.2) and an UI similar to ChatGPT with WebSearch, Image Generation, and TTS, STT capabilities.
+- **Automatic1111**: Self-hosted generative AI service for creating images.
+- **PyTorch**: Python based library and framework for tuning and developing neural networks and LLMs.
+
+### 7. Other Services
 - **Home Assistant**: Smart home automation platform to control IoT devices.
 
 ## Architecture Overview
 This homelab is built with the following components:
-1. **Host Hardware**: Servers (physical or virtualized) running Proxmox, this includes a Xeon based server, a few Raspberry Pi's clustered together, and my dekstop.
-2. **Virtualization Layer**: Proxmox manages most VMs, and LXC containers, Docker handles most services on the VMs, the VMs are running mostly RHEL and Ubuntu Server, a Windows Server instance simmulates AD and Group Policy.
-4. **Networking**: TwinGate secures and manages traffic to/from the lab, firewalls and access control lists are done through my router.
+1. **Host Hardware**: Servers (physical or virtualized) running Proxmox, this includes a Xeon based Dell workstation, a few Raspberry Pi's clustered together, my desktop and, my laptop.
+2. **Virtualization Layer**: Proxmox manages most VMs, and LXC containers, Docker handles most services on the VMs, the VMs are running mostly RHEL and Ubuntu Server, a Windows Server instance simulates AD and Group Policy.
+4. **Networking**: TwinGate secures and manages traffic to/from the lab, firewalls and access control lists are done through my router (Xfinity base router with plans to move to Ubiquiti in the next year)
 5. **Monitoring & Logging**: Prometheus, Grafana, Wazuh and ELK stack to monitor and visualize metrics and logs.
