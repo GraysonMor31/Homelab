@@ -20,6 +20,16 @@ services:
         syslog-format: "rfc5424"
         syslog-facility: daemon
         tag: "HL-1"
+  
+  ntopng:
+    container_name: ntopng
+    image: ntop/ntopng:latest
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - TZ="America/Denver" # Set your timezone (e.g., "America/New_York")
+    volumes:
+      - ./ntopng:/var/lib/ntopng # Persistent storage for ntopng data
 
   nginx-proxy-manager:
     container_name: nginx-proxy-manager
@@ -46,7 +56,7 @@ services:
       - ./letsencrypt:/etc/letsencrypt
     depends_on:
       - db
-      
+
   db:
     image: 'jc21/mariadb-aria:latest'
     restart: unless-stopped
