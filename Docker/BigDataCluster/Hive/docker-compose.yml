@@ -1,0 +1,36 @@
+services:
+  hive-metastore:
+    image: bde2020/hive:2.3.2-postgresql
+    container_name: hive-metastore
+    restart: always
+    ports:
+      - 9083:9083
+    environment:
+      HIVE_METASTORE_DB_TYPE: postgres
+      HIVE_METASTORE_DB_HOST: postgres
+      HIVE_METASTORE_DB_PORT: 5432
+      HIVE_METASTORE_DB_NAME: metastore
+      HIVE_METASTORE_DB_USER: metastore
+      HIVE_METASTORE_DB_PASS: metastore
+    env_file:
+      - ./hive.env
+    networks:
+      - bigdata-network
+
+  hive-server:
+    image: bde2020/hive:2.3.2-postgresql
+    container_name: hive-server
+    restart: always
+    ports:
+      - 10000:10000
+    environment:
+      HIVE_SERVER_DB_TYPE: postgres
+      HIVE_SERVER_DB_HOST: postgres
+      HIVE_SERVER_DB_PORT: 5432
+      HIVE_SERVER_DB_NAME: metastore
+      HIVE_SERVER_DB_USER: metastore
+      HIVE_SERVER_DB_PASS: metastore
+    env_file:
+      - ./hive.env
+    networks:
+      - bigdata-network
