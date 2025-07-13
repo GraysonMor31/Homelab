@@ -6,6 +6,9 @@ BigDataCluster/Spark/spark-worker-2-logs/
 # Ignore secrets and env stuff
 *.env
 .env
+secrets
 
 # Ignore VS Code Crap
 .vscode
+settings.json
+.vscode/settings.json
