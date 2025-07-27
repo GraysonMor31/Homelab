@@ -67,6 +67,9 @@ volumes:
   postgres_data:
   sqlserver_data:
 
+env_file:
+  - ./databases.env
+
 networks:
   database_network:
     driver: bridge
