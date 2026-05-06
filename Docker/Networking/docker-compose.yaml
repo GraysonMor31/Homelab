@@ -1,0 +1,90 @@
+services:
+
+  app:
+    image: 'jc21/nginx-proxy-manager:2.12.1'   # Pin to a specific version
+    container_name: npm-app
+    restart: unless-stopped
+    ports:
+      - '80:80'           # Public HTTP
+      - '443:443'         # Public HTTPS
+      - '127.0.0.1:81:81' # Admin UI — localhost only, not exposed externally
+    environment:
+      TZ: "America/Denver"
+      DB_MYSQL_HOST: ${DB_HOST}
+      DB_MYSQL_PORT: ${DB_PORT}
+      DB_MYSQL_USER: ${DB_USER}
+      DB_MYSQL_PASSWORD: ${DB_PASSWORD}
+      DB_MYSQL_NAME: ${DB_NAME}
+      # DISABLE_IPV6: 'true'  # Uncomment if IPv6 not available on host
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    depends_on:
+      db:
+        condition: service_healthy   # Wait for DB to be truly ready
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:81/api/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - proxy-net
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  db:
+    image: 'jc21/mariadb-aria:10.11.8'   # Pin to specific version
+    container_name: npm-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MARIADB_AUTO_UPGRADE: '1'
+    volumes:
+      - ./mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - proxy-net
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  twingate_connector:
+    image: "twingate/connector:1"   # Major-version pin (Twingate convention)
+    container_name: ${TWINGATE_CONNECTOR_NAME}
+    restart: unless-stopped
+    environment:
+      - TWINGATE_NETWORK=${TWINGATE_NETWORK_ID}
+      - TWINGATE_ACCESS_TOKEN=${TWINGATE_ACCESS_TOKEN}
+      - TWINGATE_REFRESH_TOKEN=${TWINGATE_REFRESH_TOKEN}
+      - TWINGATE_LOG_ANALYTICS=v2
+      - TWINGATE_LOG_LEVEL=3
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://${SYSLOG_HOST}:${SYSLOG_PORT}"
+        syslog-format: "rfc5424"
+        syslog-facility: daemon
+        tag: "${TWINGATE_CONNECTOR_NAME}"
+    networks:
+      - proxy-net
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+networks:
+  proxy-net:
+    driver: bridge
+    name: npm-twingate-net
